@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: battleship-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: battleship
+    ports:
+      - "5432:5432"
+    volumes:
+      - battleship-data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: battleship-backend
+    restart: always
+    environment:
+      DATABASE_URL: "postgresql://postgres:password@db:5432/battleship"
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/usr/src/app # Mount local code to container
+      - /usr/src/app/node_modules # Keep container node_modules
+    working_dir: /usr/src/app
+    command: sh -c "npx prisma generate && npm run dev"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: battleship-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+volumes:
+  battleship-data:

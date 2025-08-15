@@ -1,0 +1,40 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Game {
+  id          Int      @id @default(autoincrement())
+  player1Id   Int
+  player2Id   Int?
+  currentTurn Int
+  status      String   @default("waiting") // waiting, ongoing, finished
+
+  player1     Player   @relation("Player1Games", fields: [player1Id], references: [id])
+  player2     Player?  @relation("Player2Games", fields: [player2Id], references: [id])
+
+  createdAt   DateTime @default(now())
+}
+
+model Player {
+  id       Int     @id @default(autoincrement())
+  name     String
+  ships    Ship[]
+
+  gamesAsPlayer1 Game[] @relation("Player1Games")
+  gamesAsPlayer2 Game[] @relation("Player2Games")
+}
+
+model Ship {
+  id       Int      @id @default(autoincrement())
+  type     String
+  length   Int
+  positions String   // JSON stringified array of positions
+  hits     Int       @default(0)
+  playerId Int
+  player   Player    @relation(fields: [playerId], references: [id])
+}
