@@ -4,3 +4,13 @@ export type Position = {
 };
 
 export type ShipType = "Battleship" | "Destroyer";
+
+export interface IApiResponse {
+  message: string;
+  data?: any;
+}
+
+export interface IApiResponseStatus {
+  statusCode: number;
+  message: string;
+}

@@ -13,11 +13,12 @@ model Game {
   player2Id   Int?
   currentTurn Int
   status      String   @default("waiting") // waiting, ongoing, finished
-
   player1     Player   @relation("Player1Games", fields: [player1Id], references: [id])
   player2     Player?  @relation("Player2Games", fields: [player2Id], references: [id])
 
   createdAt   DateTime @default(now())
+  
+
 }
 
 model Player {
